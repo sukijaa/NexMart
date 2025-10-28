@@ -66,7 +66,7 @@ export default function ProductForm({
 
   // Clean up resolver type - Ensure values match Zod schema exactly
   const form = useForm<ProductFormValues>({
-    resolver: zodResolver(ProductFormSchema),
+    resolver: zodResolver(ProductFormSchema) as any, // Cast to any to resolve type incompatibility
     defaultValues: {
       name: defaultValues?.name ?? '', // Use ?? for nullish coalescing
       slug: defaultValues?.slug ?? '',

@@ -11,7 +11,6 @@ import { Product } from './types'; // Assuming Product type is defined here corr
 
 // Define FormState type locally
 export type FormState = {
-  pending: boolean | undefined;
   message: string;
   errors?: Record<string, string[] | undefined>;
   success: boolean;
