@@ -2,8 +2,11 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 
-export async function GET(req: Request, context: any) {
-  const slug = (await context?.params)?.slug;
+export async function GET(
+  req: Request,
+  { params }: { params: { slug: string } }
+) {
+  const { slug } = params;
 
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
@@ -20,6 +23,5 @@ export async function GET(req: Request, context: any) {
 
   return NextResponse.json({ product: data });
 }
-
 
 export const dynamic = "force-dynamic";
