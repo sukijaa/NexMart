@@ -1,10 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
 
-export async function GET(request: NextRequest, context: any) {
-  const { params } = await context;
-  const slug = params?.slug;
+export async function GET(req: Request, context: any) {
+  const slug = (await context?.params)?.slug;
 
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
@@ -21,3 +20,6 @@ export async function GET(request: NextRequest, context: any) {
 
   return NextResponse.json({ product: data });
 }
+
+
+export const dynamic = "force-dynamic";
