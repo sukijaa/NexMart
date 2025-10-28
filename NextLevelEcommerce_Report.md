@@ -163,16 +163,37 @@ Developing this application involved several significant challenges:
 
 ## 📸 <a name="screenshots">Screenshots</a>
 
-(Please insert your screenshots below each heading)
+a) Homepage (/)
 
-* a) Homepage (/)
-* b) Product Detail Page (/products/[slug])
-* c) Login Page (/login)
-* d) Inventory Dashboard (/dashboard)
-* e) Admin Panel (/admin)
-* f) Add Product Form (/admin/add)
-* g) Edit Product Form (/admin/edit/[id])
-* h) Cart Sheet (Open)
+![Screenshot of the Homepage product grid](./images/Homepage.png)
+
+b) Product Detail Page (/products/[slug])
+
+![Screenshot of a Product Detail Page](./images/Product_Detail.png)
+
+c) Login Page (/login)
+
+![Screenshot of the Login Form](./images/Login.png)
+
+d) Inventory Dashboard (/dashboard)
+
+![Screenshot of Inventory Dashboard](./images/Dashboard.png)
+
+e) Admin Panel (/admin)
+
+![Screenshot of Admin Panel](./images/Admin.png)
+
+f) Add Product Form (/admin/add)
+
+![Screenshot of Add Product Form](./images/Add_product.png)
+
+g) Edit Product Form (/admin/edit/[id])
+
+![Screenshot of Edit Product Form](./images/Edit_product.png)
+
+h) Cart Sheet (Open)
+
+![Screenshot of Cart Sheet](./images/Cart.png)
 
 ## 🏁 <a name="conclusion">Conclusion</a>
 
