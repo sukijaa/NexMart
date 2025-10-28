@@ -1,43 +1,50 @@
-// File: app/api/products/[slug]/route.ts - STANDARD SIGNATURE for Next 14
+// File: app/api/products/[slug]/route.ts - FORCING VERCEL's INCORRECT PROMISE SIGNATURE
 
 import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse, NextRequest } from 'next/server';
-import { Product } from '@/lib/types'; // Import Product type for better typing
+import { Product } from '@/lib/types';
 
-// Define expected context type explicitly
-type ApiContext = {
-    params: { slug: string };
+// Define the incorrect type that Vercel's build seems to demand
+type VercelBuildContext = {
+    params: Promise<{ slug: string }>; // Explicitly using Promise here
 };
 
 export async function GET(
   request: NextRequest,
-  { params }: ApiContext // Use the standard object type
-): Promise<NextResponse> { // Explicit return type
+  context: VercelBuildContext // Using the incorrect type Vercel expects
+): Promise<NextResponse> {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 
-  const slug: string = params.slug; // Access slug directly, explicitly type
+  let slug: string | undefined;
+  try {
+      // Await the params object because we typed context with a Promise
+      const params = await context.params;
+      slug = params.slug;
+  } catch (e) {
+      console.error("API Route Error: Failed awaiting context.params:", e);
+      return NextResponse.json({ error: 'Internal server error processing request parameters' }, { status: 500 });
+  }
+
 
   if (!slug || typeof slug !== 'string') {
-     console.error("API Route Error: Slug parameter is missing or invalid.");
+     console.error("API Route Error: Slug parameter is missing or invalid after await.");
      return NextResponse.json({ error: 'Missing or invalid slug parameter' }, { status: 400 });
   }
 
   try {
-    // Explicitly type the Supabase response
     const { data, error, status } = await supabase
       .from('products')
       .select('*')
       .eq('slug', slug)
-      .single<Product>(); // Specify the expected data type
+      .single<Product>();
 
     if (error) {
       console.error(`Supabase error fetching slug "${slug}": ${status}`, error);
-      if (status === 406 || error.code === 'PGRST116') { // PGRST116 = row not found from .single()
+      if (status === 406 || error.code === 'PGRST116') {
            return NextResponse.json({ error: 'Product not found' }, { status: 404 });
        }
-       // Other potential database errors
        return NextResponse.json({ error: 'Database error fetching product' }, { status: 500 });
     }
 
@@ -46,12 +53,10 @@ export async function GET(
        return NextResponse.json({ error: 'Product data not found' }, { status: 404 });
     }
 
-    // Explicitly type the success response
     return NextResponse.json<{ product: Product }>({ product: data });
 
-  } catch (err: unknown) { // Type the catch error
+  } catch (err: unknown) {
       console.error(`API Route Critical Error for slug "${slug}":`, err);
-       // Provide a generic error message
       const errorMessage = err instanceof Error ? err.message : 'Unknown internal server error';
       return NextResponse.json({ error: 'Internal server error', details: errorMessage }, { status: 500 });
   }
