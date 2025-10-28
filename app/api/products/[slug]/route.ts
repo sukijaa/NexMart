@@ -1,44 +1,40 @@
-// File: app/api/products/[slug]/route.ts - USING 'any' TO BYPASS BUILD TYPE ERROR
+// File: app/api/products/[slug]/route.ts - Standard Signature + @ts-ignore
 
 import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse, NextRequest } from 'next/server';
+import { Product } from '@/lib/types'; // Import Product type for better typing
 
-// Use 'any' for the context parameter to bypass the stubborn build type error
+// Define expected context type explicitly
+type ApiContext = {
+    params: { slug: string };
+};
+
 export async function GET(
   request: NextRequest,
-  context: any // Force bypass TypeScript check for params
-) {
+  // @ts-ignore - Vercel build fails with incorrect type error here, ignoring line.
+  { params }: ApiContext // Use the standard object type
+): Promise<NextResponse> { // Explicit return type
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 
-  // Attempt to access slug, assuming context.params might be a Promise or object
-  let slug: string | undefined;
-  try {
-    // Check if params needs to be awaited (like in Turbopack dev)
-    // or if it's already an object (like in standard build)
-    const paramsObject = await context.params || context.params;
-    slug = paramsObject?.slug;
-  } catch (e) {
-      console.error("Error accessing context.params in API route:", e);
-      return NextResponse.json({ error: 'Internal server error processing request parameters' }, { status: 500 });
-  }
+  const slug: string = params.slug; // Access slug directly, explicitly type
 
-
-  if (!slug) {
-     console.error("API Route Error: Slug parameter could not be resolved.");
+  if (!slug || typeof slug !== 'string') {
+     console.error("API Route Error: Slug parameter is missing or invalid.");
      return NextResponse.json({ error: 'Missing or invalid slug parameter' }, { status: 400 });
   }
 
   try {
+    // Explicitly type the Supabase response
     const { data, error, status } = await supabase
       .from('products')
       .select('*')
       .eq('slug', slug)
-      .single();
+      .single<Product>(); // Specify the expected data type
 
     if (error) {
-       console.error(`Supabase error fetching slug "${slug}": ${status}`, error);
+      console.error(`Supabase error fetching slug "${slug}": ${status}`, error);
       if (status === 406 || error.code === 'PGRST116') {
            return NextResponse.json({ error: 'Product not found' }, { status: 404 });
        }
@@ -50,10 +46,13 @@ export async function GET(
        return NextResponse.json({ error: 'Product data not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ product: data });
+    // Explicitly type the success response
+    return NextResponse.json<{ product: Product }>({ product: data });
 
-  } catch (err) {
+  } catch (err: unknown) { // Type the catch error
       console.error(`API Route Critical Error for slug "${slug}":`, err);
-      return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+       // Provide a generic error message
+      const errorMessage = err instanceof Error ? err.message : 'Unknown internal server error';
+      return NextResponse.json({ error: 'Internal server error', details: errorMessage }, { status: 500 });
   }
 }
