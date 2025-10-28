@@ -1,18 +1,19 @@
-// File: app/api/products/[slug]/route.ts - REPLACE WITH THIS
+// File: app/api/products/[slug]/route.ts - FORCING PROMISE SIGNATURE FOR VERCEL BUILD
 
 import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
-import { NextResponse, NextRequest } from 'next/server'; // Import NextRequest
+import { NextResponse, NextRequest } from 'next/server';
 
-// Standard signature for App Router API routes
+// Explicitly use the Promise signature that the build error seems to expect
 export async function GET(
-  request: NextRequest, // Use NextRequest
-  { params }: { params: { slug: string } } // params IS an object here
+  request: NextRequest,
+  context: { params: Promise<{ slug: string }> } // Force Promise type
 ) {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 
-  // NO 'await params' - params is already the object
+  // Await the params object as required by this signature
+  const params = await context.params;
   const slug = params.slug;
 
   if (!slug) {
@@ -26,15 +27,16 @@ export async function GET(
     .single();
 
   if (error) {
-    console.error(`Error fetching product with slug "${slug}":`, error); // Log for Vercel
+    console.error(`Error fetching product with slug "${slug}" in Vercel build context:`, error);
     return NextResponse.json({ error: 'Product not found' }, { status: 404 });
   }
 
-  if (!data) {
-     return NextResponse.json({ error: 'Product data is unexpectedly null' }, { status: 404 });
-  }
+   if (!data) {
+      console.error(`Product data is unexpectedly null for slug "${slug}" in Vercel build context.`);
+      return NextResponse.json({ error: 'Product data not found' }, { status: 404 });
+   }
 
   return NextResponse.json({ product: data });
 }
 
-// REMOVED: export const dynamic = "force-dynamic"; (Not typically needed for GET routes unless bypassing cache)
+// Keep removed: export const dynamic = "force-dynamic";
