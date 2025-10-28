@@ -1,5 +1,3 @@
-// File: next.config.ts
-
 /** @type {import('next').NextConfig} */
 const config = {
   images: {
@@ -12,9 +10,8 @@ const config = {
         protocol: 'https',
         hostname: 'plus.unsplash.com',
       },
-      { // Supabase Storage Hostname
+      {
         protocol: 'https',
-        // Make SURE this hostname is correct for YOUR Supabase project
         hostname: 'rfowlpjjiiytitihtpvl.supabase.co',
       },
     ],
@@ -23,11 +20,6 @@ const config = {
     serverActions: {
       bodySizeLimit: '1mb', // Enforce 1MB limit
     },
-    // --- FORCE WEBPACK ---
-    turbopack: {
-        enabled: false // Explicitly disable Turbopack for dev
-    }
-    // --- END FORCE WEBPACK ---
   },
 };
 
