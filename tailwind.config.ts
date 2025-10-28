@@ -1,15 +1,17 @@
-// File: tailwind.config.ts - OFFICIAL SHADCN STANDARD
+// File: tailwind.config.ts - STANDARD V3 using require
 
 import type { Config } from "tailwindcss";
+// Use require for defaultTheme with Tailwind v3/TS config
+const { fontFamily } = require("tailwindcss/defaultTheme");
 
 const config = {
-  darkMode: ["class"],
+  darkMode: 'class',
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-	],
+  ],
   prefix: "",
   theme: {
     container: {
@@ -20,7 +22,11 @@ const config = {
       },
     },
     extend: {
-      colors: {
+      fontFamily: {
+        // Ensure var name matches layout.tsx if using custom font like Inter
+        sans: ["var(--font-sans)", ...fontFamily.sans],
+      },
+      colors: { // Standard Shadcn colors mapping to CSS variables
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -60,7 +66,7 @@ const config = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
-      keyframes: {
+      keyframes: { // Standard Shadcn animations
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
@@ -76,7 +82,8 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")], // Requires npm install -D tailwindcss-animate
+  // Ensure tailwindcss-animate is installed (it is in package.json)
+  plugins: [require("tailwindcss-animate")],
 } satisfies Config;
 
 export default config;
