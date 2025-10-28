@@ -1,12 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 
 export async function GET(
-  req: Request,
-  { params }: { params: { slug: string } }
+  request: NextRequest,
+  context: { params: { slug: string } } // ✅ Strict, correct typing
 ) {
-  const { slug } = params;
+  // ✅ Fix: no need to await context.params
+  const { slug } = context.params;
 
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
@@ -24,4 +25,5 @@ export async function GET(
   return NextResponse.json({ product: data });
 }
 
+// ✅ Optional, keeps the route dynamic
 export const dynamic = "force-dynamic";
