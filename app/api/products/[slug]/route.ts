@@ -2,25 +2,21 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
-
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest, context: { params: { slug: string } }) {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 
-  // FIX FOR TURBOPACK BUG:
-  // The 'params' object might be a Promise in some environments; await it here to normalize.
-  const resolvedParams = await context.params;
-  const slug = resolvedParams.slug; // Use the resolved slug
+  const { slug } = context.params; // ✅ no await here
 
   const { data, error } = await supabase
     .from('products')
     .select('*')
-    .eq('slug', slug) // Use the fixed slug variable
+    .eq('slug', slug)
     .single();
 
-  if (error) {
+  if (error || !data) {
     return NextResponse.json({ error: 'Product not found' }, { status: 404 });
   }
 
