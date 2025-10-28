@@ -1,3 +1,5 @@
+// File: next.config.mjs
+
 /** @type {import('next').NextConfig} */
 const config = {
   images: {
@@ -10,17 +12,21 @@ const config = {
         protocol: 'https',
         hostname: 'plus.unsplash.com',
       },
-      {
+      { // Supabase Storage Hostname
         protocol: 'https',
+        // Make SURE this hostname is correct for YOUR Supabase project
         hostname: 'rfowlpjjiiytitihtpvl.supabase.co',
       },
     ],
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: '1mb', // Enforce 1MB limit
+      // Keep the limit at 1MB as you requested
+      bodySizeLimit: '1mb',
     },
+    // We removed the turbopack setting earlier, keep it removed
   },
 };
 
+// Use module.exports for .mjs files
 export default config;
