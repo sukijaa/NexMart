@@ -2,18 +2,16 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
 
-export async function GET(
-  request: Request,
-  { params }: { params: { slug: string } }
-) {
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest, context: { params: { slug: string } }) {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 
   // FIX FOR TURBOPACK BUG:
-  // The 'params' object is being sent as a Promise. We await it here.
-  const resolvedParams = await params;
+  // The 'params' object might be a Promise in some environments; await it here to normalize.
+  const resolvedParams = await context.params;
   const slug = resolvedParams.slug; // Use the resolved slug
 
   const { data, error } = await supabase
