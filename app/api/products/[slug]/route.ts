@@ -1,35 +1,31 @@
-// File: app/api/products/[slug]/route.ts - FORCING VERCEL's INCORRECT PROMISE SIGNATURE
+// File: app/api/products/[slug]/route.ts - EXPLICIT HANDLER TYPING
 
 import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse, NextRequest } from 'next/server';
 import { Product } from '@/lib/types';
 
-// Define the incorrect type that Vercel's build seems to demand
-type VercelBuildContext = {
-    params: Promise<{ slug: string }>; // Explicitly using Promise here
+// Define the expected context type for dynamic routes
+type ParamsContext = {
+    params: { slug: string };
 };
 
-export async function GET(
-  request: NextRequest,
-  context: VercelBuildContext // Using the incorrect type Vercel expects
-): Promise<NextResponse> {
+// Define the expected function signature for a GET Route Handler
+type GetHandler = (
+    request: NextRequest,
+    context: ParamsContext
+) => Promise<NextResponse>;
+
+
+// Apply the explicit type to the exported GET function
+export const GET: GetHandler = async (request, { params }) => {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 
-  let slug: string | undefined;
-  try {
-      // Await the params object because we typed context with a Promise
-      const params = await context.params;
-      slug = params.slug;
-  } catch (e) {
-      console.error("API Route Error: Failed awaiting context.params:", e);
-      return NextResponse.json({ error: 'Internal server error processing request parameters' }, { status: 500 });
-  }
-
+  const slug: string = params.slug; // Access slug directly
 
   if (!slug || typeof slug !== 'string') {
-     console.error("API Route Error: Slug parameter is missing or invalid after await.");
+     console.error("API Route Error: Slug parameter is missing or invalid.");
      return NextResponse.json({ error: 'Missing or invalid slug parameter' }, { status: 400 });
   }
 
@@ -60,4 +56,4 @@ export async function GET(
       const errorMessage = err instanceof Error ? err.message : 'Unknown internal server error';
       return NextResponse.json({ error: 'Internal server error', details: errorMessage }, { status: 500 });
   }
-}
+};
