@@ -1,8 +1,8 @@
-// File: postcss.config.mjs
+// File: postcss.config.mjs - STANDARD
 
 const config = {
   plugins: {
-    '@tailwindcss/postcss': {}, // Use the new package
+    tailwindcss: {},
     autoprefixer: {},
   },
 };

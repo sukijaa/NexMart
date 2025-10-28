@@ -1,4 +1,4 @@
-// File: next.config.mjs
+// File: next.config.ts
 
 /** @type {import('next').NextConfig} */
 const config = {
@@ -20,13 +20,12 @@ const config = {
     ],
   },
   experimental: {
-    serverActions: {
-      // Keep the limit at 1MB as you requested
-      bodySizeLimit: '1mb',
-    },
-    // We removed the turbopack setting earlier, keep it removed
+  serverActions: {
+    // Keep the limit at 1MB as you requested
+    bodySizeLimit: '1mb',
   },
+  // NO 'turbopack' key here
+},
 };
 
-// Use module.exports for .mjs files
 export default config;

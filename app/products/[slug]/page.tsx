@@ -71,6 +71,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
           <AddToCartButton
             product={product}
+            size="lg"
             className="w-full md:w-auto"
             disabled={product.inventory === 0}
           />
