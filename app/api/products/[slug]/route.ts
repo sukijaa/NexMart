@@ -4,9 +4,9 @@ import { cookies } from "next/headers";
 
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ slug: string }> } // ✅ Note: Promise here
+  context: { params: Promise<{ slug: string }> } // 👈 must be Promise
 ) {
-  const { slug } = await context.params; // ✅ Must await
+  const { slug } = await context.params; // 👈 must await this
 
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
